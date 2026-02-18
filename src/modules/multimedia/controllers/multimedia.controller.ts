@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { MultimediaService } from '../services/multimedia.service';
+import { MultimediaService } from '../multimedia.service';
 import { MultimediaType } from '../../../entities/multimedia.entity';
 import type { Response } from 'express';
 import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -56,7 +56,9 @@ export class MultimediaController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      console.log('Endpoint reached: /multimedia/upload');
+        console.log('Endpoint reached: /multimedia/upload');
+      console.log('STORAGE_PROVIDER (process.env):', process.env.STORAGE_PROVIDER);
+      console.log('MultimediaService provider:', this.multimediaService.getProviderName());
       console.log('File received:', file);
       console.log('Metadata received:', metadata);
 

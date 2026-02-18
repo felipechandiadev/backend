@@ -22,6 +22,7 @@ import { IStorageProvider } from './storage-provider.interface';
 export class MultimediaService {
   private readonly logger = new Logger(MultimediaService.name);
   private storageProvider: IStorageProvider;
+  private providerName: string = 'local';
 
   constructor(
     @InjectRepository(Multimedia)
@@ -36,15 +37,23 @@ export class MultimediaService {
     
     if (provider === 'r2') {
       this.storageProvider = this.cloudflareStorage;
+      this.providerName = 'r2';
       this.logger.log('🚀 Using Cloudflare R2 storage');
     } else if (provider === 's3') {
       // Use AWS S3 provider (requires AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, S3_BUCKET_NAME)
       this.storageProvider = this.awsS3StorageService;
+      this.providerName = 's3';
       this.logger.log('🚀 Using AWS S3 storage');
     } else {
       this.storageProvider = this.staticFilesService;
+      this.providerName = 'local';
       this.logger.log('📁 Using local storage');
     }
+  }
+
+  // Expose provider name for runtime checks
+  getProviderName(): string {
+    return this.providerName;
   }
 
 
@@ -121,6 +130,8 @@ export class MultimediaService {
       } else {
         throw new Error('No file data available');
       }
+
+      this.logger.log(`[uploadFile] provider=${this.providerName} path=${relativePath} size=${fileBuffer.length}`);
 
       // Subir archivo usando el storage provider seleccionado
       const publicUrl = await this.storageProvider.uploadFile(
@@ -252,6 +263,8 @@ export class MultimediaService {
   async uploadFileToPath(file: Express.Multer.File, uploadPath: string): Promise<string> {
     // Normalize uploadPath (remove leading slashes)
     const relativeDir = uploadPath.replace(/^\/+/, '');
+
+    this.logger.log(`[uploadFileToPath] provider=${this.providerName} uploadPath=${uploadPath} originalName=${file.originalname}`);
 
     // Generate unique filename (same logic as uploadFile)
     const extension = path.extname(file.originalname);
