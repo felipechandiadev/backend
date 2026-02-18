@@ -132,7 +132,7 @@ export class AnalyticsService {
     const results = await this.propertyRepository
       .createQueryBuilder('property')
       .leftJoin('property.propertyType', 'pt')
-      .select('COALESCE(pt.name, "Otro")', 'type')
+      .select("COALESCE(pt.name, 'Otro')", 'type')
       .addSelect('COUNT(*)', 'count')
       .where('property.deletedAt IS NULL')
       .groupBy('pt.name')

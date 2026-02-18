@@ -30,10 +30,9 @@ import { GridCommunityUsersQueryDto } from './dto/grid-community-users.dto';
 import { AuditService } from '../../audit/audit.service';
 import { AuditAction, AuditEntityType } from '../../common/enums/audit.enums';
 import { UserFavoriteData } from '../../common/interfaces/user-favorites.interface';
-import * as fs from 'fs';
-import * as path from 'path';
 import { plainToInstance } from 'class-transformer';
 import { ConfigService } from '@nestjs/config';
+import { MultimediaService } from '../multimedia/services/multimedia.service';
 
 @Injectable()
 export class UsersService {
@@ -47,6 +46,7 @@ export class UsersService {
     @Inject(AuditService)
     private readonly auditService: AuditService,
     private readonly configService: ConfigService,
+    private readonly multimediaService: MultimediaService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -374,7 +374,7 @@ export class UsersService {
       .createQueryBuilder('user')
       .where('user.deletedAt IS NULL')
       .andWhere('user.role IN (:...roles)', { roles: [UserRole.ADMIN, UserRole.AGENT] })
-      .orderBy('user.personalInfo->>"$.firstName"', 'ASC');
+      .orderBy("JSON_UNQUOTE(JSON_EXTRACT(user.personalInfo, '$.firstName'))", 'ASC');
 
     if (search) {
       const normalizedSearch = `%${search.toLowerCase()}%`;
@@ -413,7 +413,7 @@ export class UsersService {
       .createQueryBuilder('user')
       .where('user.deletedAt IS NULL')
       .andWhere('user.role = :role', { role: UserRole.AGENT })
-      .orderBy('user.personalInfo->>"$.firstName"', 'ASC');
+      .orderBy("JSON_UNQUOTE(JSON_EXTRACT(user.personalInfo, '$.firstName'))", 'ASC');
 
     if (search) {
       const normalizedSearch = `%${search.toLowerCase()}%`;
@@ -497,39 +497,27 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { id, deletedAt: IsNull() } });
     if (!user) throw new NotFoundException('User not found');
 
-    // Validar tipo de archivo
+    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.mimetype)) {
       throw new BadRequestException('Only image files (jpeg, png, webp) are allowed');
     }
 
-    // Crear directorio absoluto (sin subcarpetas por usuario)
-    const uploadDir = path.join(process.cwd(), 'public', 'users');
-    console.log('Upload directory:', uploadDir);
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-      console.log('Created upload directory');
+    // If there is an existing avatar, attempt to delete it from the configured storage provider
+    try {
+      if (user.personalInfo?.avatarUrl) {
+        await this.multimediaService.deleteFileByUrl(user.personalInfo.avatarUrl);
+        console.log('Deleted previous avatar:', user.personalInfo.avatarUrl);
+      }
+    } catch (err) {
+      console.warn('Could not delete previous avatar (continuing):', err?.message ?? err);
     }
 
-    // Generar filename con ID del usuario y path
-    const ext = path.extname(file.originalname) || '.jpg';
-    const filename = `avatar-${id}${ext}`;
-    const filePath = path.join(uploadDir, filename);
-    
-    // Generar URL absoluta completa usando BACKEND_PUBLIC_URL
-    const backendUrl = this.configService.get<string>('BACKEND_PUBLIC_URL') || 'http://localhost:3000';
-    const absoluteUrl = `${backendUrl}/public/users/${filename}`;
+    // Upload the new avatar using the provider-aware MultimediaService
+    const publicUrl = await this.multimediaService.uploadFileToPath(file, 'users');
 
-    console.log('Saving file to:', filePath);
-    console.log('Absolute URL will be:', absoluteUrl);
-
-    // Mover archivo
-    fs.writeFileSync(filePath, file.buffer);
-    console.log('File saved successfully');
-
-    // Actualizar usuario con URL absoluta
     if (!user.personalInfo) user.personalInfo = {};
-    user.personalInfo.avatarUrl = absoluteUrl;
+    user.personalInfo.avatarUrl = publicUrl;
     await this.userRepository.save(user);
     return user;
   }

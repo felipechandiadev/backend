@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { MultimediaService } from '../multimedia.service';
+import { MultimediaService as UploadMultimediaService } from '../services/multimedia.service';
 import { MultimediaType } from '../../../entities/multimedia.entity';
 import type { Response } from 'express';
 import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -24,7 +24,7 @@ import type { Express } from 'express';
 @ApiTags('multimedia')
 @Controller('multimedia')
 export class MultimediaController {
-  constructor(private readonly multimediaService: MultimediaService) {}
+  constructor(private readonly multimediaService: UploadMultimediaService) {}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))

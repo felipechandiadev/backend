@@ -118,6 +118,9 @@ export class MultimediaService {
     );
     const relativePath = path.join(relativeDir, uniqueFilename);
 
+    // Track disk temp path when multer used diskStorage
+    let tempDiskPath: string | undefined;
+
     try {
       let fileBuffer: Buffer;
 
@@ -125,8 +128,10 @@ export class MultimediaService {
       if (file.buffer && file.buffer.length) {
         fileBuffer = file.buffer;
       } else if ((file as any).path) {
-        // Si multer usó diskStorage, leer el archivo
-        fileBuffer = await fs.readFile((file as any).path);
+        // Si multer usó diskStorage, leer el archivo (y recordar la ruta para limpieza)
+        const diskPath = (file as any).path as string;
+        tempDiskPath = diskPath;
+        fileBuffer = await fs.readFile(diskPath);
       } else {
         throw new Error('No file data available');
       }
@@ -151,13 +156,25 @@ export class MultimediaService {
       multimedia.filename = uniqueFilename;
       multimedia.fileSize = file.size;
 
-      return await this.multimediaRepository.save(multimedia);
+      const saved = await this.multimediaRepository.save(multimedia);
+
+      return saved;
     } catch (error) {
       this.logger.error('❌ [MultimediaService.uploadFile] Error:', error);
       throw new HttpException(
         'Error uploading file',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
+    } finally {
+      // Si multer dejó un archivo temporal en diskStorage y el provider es remoto, borrarlo
+      try {
+        if (tempDiskPath && this.storageProvider !== this.staticFilesService) {
+          await fs.unlink(tempDiskPath);
+          this.logger.log(`🧹 Temp upload removed: ${tempDiskPath}`);
+        }
+      } catch (cleanupErr) {
+        this.logger.warn(`⚠️ Could not remove temp upload ${tempDiskPath}: ${cleanupErr?.message ?? cleanupErr}`);
+      }
     }
   }
 
