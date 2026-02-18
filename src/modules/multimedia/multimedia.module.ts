@@ -8,6 +8,7 @@ import { MultimediaController as UploadMultimediaController } from './controller
 import { MultimediaService as UploadMultimediaService } from './services/multimedia.service';
 import { StaticFilesService } from './services/static-files.service';
 import { CloudflareStorageService } from './services/cloudflare-storage.service';
+import { AwsS3StorageService } from './services/aws-s3-storage.service';
 import { UploadConfigService } from '../../config/upload.config';
 
 @Module({
@@ -18,6 +19,7 @@ import { UploadConfigService } from '../../config/upload.config';
     UploadMultimediaService,
     StaticFilesService,
     CloudflareStorageService,
+    AwsS3StorageService,
     UploadConfigService,
   ],
   exports: [
@@ -25,6 +27,7 @@ import { UploadConfigService } from '../../config/upload.config';
     UploadMultimediaService,
     StaticFilesService,
     CloudflareStorageService,
+    AwsS3StorageService,
     UploadConfigService,
   ],
 })

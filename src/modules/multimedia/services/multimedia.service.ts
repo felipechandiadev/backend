@@ -15,6 +15,7 @@ import {
 } from '../interfaces/multimedia.interface';
 import { StaticFilesService } from './static-files.service';
 import { CloudflareStorageService } from './cloudflare-storage.service';
+import { AwsS3StorageService } from './aws-s3-storage.service';
 import { IStorageProvider } from './storage-provider.interface';
 
 @Injectable()
@@ -27,6 +28,7 @@ export class MultimediaService {
     private readonly multimediaRepository: Repository<Multimedia>,
     private readonly staticFilesService: StaticFilesService,
     private readonly cloudflareStorage: CloudflareStorageService,
+    private readonly awsS3StorageService: AwsS3StorageService,
     private readonly configService: ConfigService,
   ) {
     // Seleccionar provider según configuración
@@ -35,6 +37,10 @@ export class MultimediaService {
     if (provider === 'r2') {
       this.storageProvider = this.cloudflareStorage;
       this.logger.log('🚀 Using Cloudflare R2 storage');
+    } else if (provider === 's3') {
+      // Use AWS S3 provider (requires AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, S3_BUCKET_NAME)
+      this.storageProvider = this.awsS3StorageService;
+      this.logger.log('🚀 Using AWS S3 storage');
     } else {
       this.storageProvider = this.staticFilesService;
       this.logger.log('📁 Using local storage');
@@ -91,7 +97,7 @@ export class MultimediaService {
   async uploadFile(
     file: Express.Multer.File,
     metadata: MultimediaUploadMetadata,
-    userId: string,
+    userId?: string,
   ): Promise<Multimedia> {
     // Directorio relativo bajo la carpeta de uploads (ej: PROPERTY_IMG)
     const relativeDir = this.getUploadPath(metadata.type as MultimediaType);
@@ -184,6 +190,38 @@ export class MultimediaService {
     }
   }
 
+  /**
+   * Delete a file given its public URL (handles local, R2 and S3 URLs)
+   */
+  async deleteFileByUrl(publicUrl: string): Promise<void> {
+    if (!publicUrl) return;
+
+    try {
+      // Local uploads: URL contains "/public/" -> remove prefix and delete
+      if (publicUrl.includes('/public/')) {
+        const parts = publicUrl.split('/public/');
+        if (parts.length > 1) {
+          const relativePath = parts[1];
+          await this.staticFilesService.deleteFile(relativePath);
+          return;
+        }
+      }
+
+      // Remote providers (S3 / R2 or custom CDN): extract pathname and delete using the storage provider
+      let parsedPath = new URL(publicUrl).pathname.replace(/^\/+/, '');
+
+      // Strip leading 'public/' if present
+      if (parsedPath.startsWith('public/')) {
+        parsedPath = parsedPath.replace(/^public\//, '');
+      }
+
+      await this.storageProvider.deleteFile(parsedPath);
+    } catch (error) {
+      this.logger.error(`[deleteFileByUrl] failed to delete ${publicUrl}: ${error?.message ?? error}`);
+      throw new HttpException('Error deleting file', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   private getFormatFromMimeType(mimeType: string): MultimediaFormat {
     if (!mimeType) {
       return MultimediaFormat.DOCUMENT;
@@ -212,12 +250,10 @@ export class MultimediaService {
    * Useful for logos, documents, etc. that don't need database records
    */
   async uploadFileToPath(file: Express.Multer.File, uploadPath: string): Promise<string> {
-    const fullUploadPath = this.staticFilesService.getFullPath(uploadPath);
+    // Normalize uploadPath (remove leading slashes)
+    const relativeDir = uploadPath.replace(/^\/+/, '');
 
-    // Ensure the directory exists
-    await fs.mkdir(fullUploadPath, { recursive: true });
-
-    // Generate unique filename
+    // Generate unique filename (same logic as uploadFile)
     const extension = path.extname(file.originalname);
     const timestamp = new Date()
       .toISOString()
@@ -228,21 +264,32 @@ export class MultimediaService {
       .toString(36)
       .substring(2, 10)
       .toUpperCase();
-    const uniqueFilename = `${uploadPath.toLowerCase().replace('/', '_')}_${timestamp}_${randomString}${extension}`;
+    const uniqueFilename = `${relativeDir.toLowerCase().replace(/[\/]/g, '_')}_${timestamp}_${randomString}${extension}`;
 
-  const filePath = path.join(fullUploadPath, uniqueFilename);
+    const relativePath = path.posix.join(relativeDir, uniqueFilename);
 
+    // If current provider is local (StaticFilesService) keep old behaviour
+    if (this.storageProvider === this.staticFilesService) {
+      const fullUploadPath = this.staticFilesService.getFullPath(relativeDir);
+      await fs.mkdir(fullUploadPath, { recursive: true });
+      const filePath = path.join(fullUploadPath, uniqueFilename);
+
+      try {
+        await fs.writeFile(filePath, file.buffer);
+        // Return full public URL for local provider to keep result consistent with remote providers
+        return this.staticFilesService.getPublicUrl(path.posix.join(relativeDir, uniqueFilename));
+      } catch (error) {
+        throw new HttpException('Error uploading file', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    // For remote providers (R2 / S3) delegate to storageProvider and return public URL
     try {
-      // Save the file to the upload directory
-      await fs.writeFile(filePath, file.buffer);
-
-      // Return the relative path for URL generation
-      return path.join(uploadPath, uniqueFilename);
+      const publicUrl = await this.storageProvider.uploadFile(file.buffer, relativePath, file.mimetype);
+      return publicUrl;
     } catch (error) {
-      throw new HttpException(
-        'Error uploading file',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.logger.error(`[uploadFileToPath] remote upload failed: ${error?.message ?? error}`);
+      throw new HttpException('Error uploading file to remote storage', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

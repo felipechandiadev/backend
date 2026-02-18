@@ -36,18 +36,15 @@ export class TestimonialsService {
     let imageUrl: string | undefined;
 
     if (file) {
-      // Guardar el archivo y obtener la URL
-      const fs = require('fs');
-      const path = require('path');
-      const uploadDir = path.join(__dirname, '../../../public/web/testimonials');
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-      const filename = `${Date.now()}-${file.originalname}`;
-      const filepath = path.join(uploadDir, filename);
-      fs.writeFileSync(filepath, file.buffer);
-
-      // Generar URL pública
-      const backendUrl = process.env.BACKEND_PUBLIC_URL || `http://localhost:${process.env.PORT || 3001}`;
-      imageUrl = `${backendUrl}/public/web/testimonials/${filename}`;
+      // Store the image via MultimediaService so STORAGE_PROVIDER (local or R2) is respected
+      try {
+        const multimedia = await this.uploadMultimediaService.uploadFile(file, { type: MultimediaType.TESTIMONIAL_IMG }, undefined);
+        imageUrl = multimedia.url;
+      } catch (err) {
+        // If multimedia upload fails, surface the error so caller can handle it
+        console.warn('[TestimonialsService] multimedia upload failed, aborting:', err);
+        throw err;
+      }
     }
 
     // Forzar isActive a booleano si viene en el DTO
@@ -91,18 +88,14 @@ export class TestimonialsService {
     
     let imageUrl: string | undefined;
     if (image) {
-      // Guardar el archivo y obtener la URL
-      const fs = require('fs');
-      const path = require('path');
-      const uploadDir = path.join(__dirname, '../../../public/web/testimonials');
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-      const filename = `${Date.now()}-${image.originalname}`;
-      const filepath = path.join(uploadDir, filename);
-      fs.writeFileSync(filepath, image.buffer);
-
-      // Generar URL pública
-      const backendUrl = process.env.BACKEND_PUBLIC_URL || `http://localhost:${process.env.PORT || 3001}`;
-      imageUrl = `${backendUrl}/public/web/testimonials/${filename}`;
+      // Store the image via MultimediaService (supports R2/local)
+      try {
+        const multimedia = await this.uploadMultimediaService.uploadFile(image, { type: MultimediaType.TESTIMONIAL_IMG }, undefined);
+        imageUrl = multimedia.url;
+      } catch (err) {
+        console.warn('[TestimonialsService] multimedia upload failed during update:', err);
+        throw err;
+      }
     }
 
     // Forzar isActive a booleano si viene en el DTO

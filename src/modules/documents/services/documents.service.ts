@@ -2,15 +2,9 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DocumentType } from '../../../entities/document-type.entity';
-import {
-  Multimedia,
-  MultimediaType,
-} from '../../../entities/multimedia.entity';
-import { StaticFilesService } from '../../multimedia/services/static-files.service';
-import {
-  DocumentUploadDto,
-  DocumentResponse,
-} from '../interfaces/document.interface';
+import { Multimedia, MultimediaType } from '../../../entities/multimedia.entity';
+import { MultimediaService as UploadMultimediaService } from '../../multimedia/services/multimedia.service';
+import { DocumentUploadDto, DocumentResponse } from '../interfaces/document.interface';
 
 @Injectable()
 export class DocumentsService {
@@ -19,7 +13,7 @@ export class DocumentsService {
     private readonly documentTypeRepository: Repository<DocumentType>,
     @InjectRepository(Multimedia)
     private readonly multimediaRepository: Repository<Multimedia>,
-    private readonly staticFilesService: StaticFilesService,
+    private readonly uploadMultimediaService: UploadMultimediaService,
   ) {}
 
   async uploadDocument(data: DocumentUploadDto): Promise<DocumentResponse> {
@@ -32,58 +26,24 @@ export class DocumentsService {
       throw new HttpException('Document type not found', HttpStatus.NOT_FOUND);
     }
 
-    const filename = `${Date.now()}-${data.file.originalname}`;
-    const uploadPath = 'docs';
-    const fullPath = this.staticFilesService.getFullPath(
-      `${uploadPath}/${filename}`,
+    // Delegar la subida al servicio provider-aware (soporta local / R2 / S3)
+    const multimedia = await this.uploadMultimediaService.uploadFile(
+      data.file,
+      { type: MultimediaType.DOCUMENT, seoTitle: data.metadata?.seoTitle, description: data.description },
     );
 
-    try {
-      // Guardar el archivo
-      await this.staticFilesService.saveFile(
-        data.file.buffer,
-        `${uploadPath}/${filename}`,
-      );
-
-      // Crear el registro multimedia
-      const multimedia = new Multimedia();
-      multimedia.type = MultimediaType.DOCUMENT;
-      multimedia.format = this.staticFilesService.getFormatFromMimeType(
-        data.file.mimetype,
-      );
-      multimedia.filename = filename;
-      multimedia.fileSize = data.file.size;
-      multimedia.url = this.staticFilesService.getPublicUrl(
-        `${uploadPath}/${filename}`,
-      );
-
-      // Asignar seoTitle solo si está presente
-      if (data.metadata?.seoTitle) {
-        multimedia.seoTitle = data.metadata.seoTitle;
-      }
-
-      const savedMultimedia = await this.multimediaRepository.save(multimedia);
-
-      return {
-        id: savedMultimedia.id,
-        documentTypeId: documentType.id,
-        documentType: documentType.name,
-        url: savedMultimedia.url,
-        filename: savedMultimedia.filename,
-        fileSize: savedMultimedia.fileSize,
-        description: data.description,
-        metadata: data.metadata,
-        createdAt: savedMultimedia.createdAt,
-        updatedAt: savedMultimedia.updatedAt,
-      };
-    } catch (error) {
-      // Limpiar archivo si ocurre un error
-      await this.staticFilesService.deleteFile(`${uploadPath}/${filename}`);
-      throw new HttpException(
-        'Error uploading document',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return {
+      id: multimedia.id,
+      documentTypeId: documentType.id,
+      documentType: documentType.name,
+      url: multimedia.url,
+      filename: multimedia.filename,
+      fileSize: multimedia.fileSize,
+      description: data.description,
+      metadata: data.metadata,
+      createdAt: multimedia.createdAt,
+      updatedAt: multimedia.updatedAt,
+    };
   }
 
   async getDocumentsByType(
@@ -126,16 +86,10 @@ export class DocumentsService {
     }
 
     try {
-      // Eliminar archivo físico
-      await this.staticFilesService.deleteFile(document.url);
-
-      // Eliminar registro de base de datos
-      await this.multimediaRepository.remove(document);
+      // Usar el servicio provider-aware para eliminar (soporta S3/R2/local)
+      await this.uploadMultimediaService.deleteFile(document.id);
     } catch (error) {
-      throw new HttpException(
-        'Error deleting document',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      throw new HttpException('Error deleting document', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

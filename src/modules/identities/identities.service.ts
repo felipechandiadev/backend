@@ -36,7 +36,7 @@ export class IdentitiesService {
         const logoFile = files.partnershipLogos[i];
         if (logoFile) {
           const partnershipPath = await this.multimediaService.uploadFileToPath(logoFile, 'web/partnerships');
-          partnership.logoUrl = this.staticFilesService.getPublicUrl(partnershipPath);
+          partnership.logoUrl = partnershipPath.startsWith('http') ? partnershipPath : this.staticFilesService.getPublicUrl(partnershipPath);
         }
       }
     }

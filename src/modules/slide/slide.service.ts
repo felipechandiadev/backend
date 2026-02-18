@@ -193,16 +193,10 @@ export class SlideService {
 
       // 2. Si hay nuevo archivo, procesar multimedia
       if (file) {
-        // Eliminar archivo anterior si existe
+        // Eliminar archivo anterior si existe (soporta local y proveedores remotos)
         if (existingSlide.multimediaUrl) {
           try {
-            // Extraer path relativo del archivo anterior
-            // URL format: http://localhost:3000/public/web/slides/filename.ext
-            const urlParts = existingSlide.multimediaUrl.split('/public/');
-            if (urlParts.length > 1) {
-              const relativePath = urlParts[1];
-              await this.staticFilesService.deleteFile(relativePath);
-            }
+            await this.multimediaService.deleteFileByUrl(existingSlide.multimediaUrl);
           } catch (error) {
             // Log pero no fallar la actualización
             console.warn('Error eliminando archivo anterior:', error);
