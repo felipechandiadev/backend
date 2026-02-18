@@ -173,13 +173,20 @@ export class AnalyticsService {
   async getAllAgentsPerformance(
     filters: AnalyticsFilters = {}
   ): Promise<AgentPerformance[]> {
+    const take = (filters as any).limit ?? 50;
+    const skip = (filters as any).offset ?? 0;
+
     const agents = await this.userRepository.find({
       where: { role: UserRole.AGENT },
+      take,
+      skip,
+      order: { createdAt: 'DESC' },
     });
 
     const performances: AgentPerformance[] = [];
     const period = this.getPeriodString(filters);
 
+    // Process agents sequentially to avoid excessive parallel DB load
     for (const agent of agents) {
       try {
         const metrics = await this.calculateAgentMetrics(agent.id, filters);

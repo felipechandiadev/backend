@@ -76,4 +76,16 @@ export class AnalyticsFiltersDto {
     required: false
   })
   operationType?: 'SALE' | 'RENT';
+
+  @ApiProperty({
+    description: 'Maximum number of agents to return (pagination)',
+    required: false,
+  })
+  limit?: number;
+
+  @ApiProperty({
+    description: 'Offset for pagination',
+    required: false,
+  })
+  offset?: number;
 }
