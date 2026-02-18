@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RegionEnum = void 0;
+var RegionEnum;
+(function (RegionEnum) {
+    RegionEnum["ARICA_Y_PARINACOTA"] = "Arica y Parinacota";
+    RegionEnum["TARAPACA"] = "Tarapac\u00E1";
+    RegionEnum["ANTOFAGASTA"] = "Antofagasta";
+    RegionEnum["ATACAMA"] = "Atacama";
+    RegionEnum["COQUIMBO"] = "Coquimbo";
+    RegionEnum["VALPARAISO"] = "Valpara\u00EDso";
+    RegionEnum["METROPOLITANA"] = "Metropolitana de Santiago";
+    RegionEnum["OHIGGINS"] = "O'Higgins";
+    RegionEnum["MAULE"] = "Maule";
+    RegionEnum["\u00D1UBLE"] = "\u00D1uble";
+    RegionEnum["BIOBIO"] = "Biob\u00EDo";
+    RegionEnum["ARAUCANIA"] = "La Araucan\u00EDa";
+    RegionEnum["LOS_RIOS"] = "Los R\u00EDos";
+    RegionEnum["LOS_LAGOS"] = "Los Lagos";
+    RegionEnum["AYSEN"] = "Ays\u00E9n";
+    RegionEnum["MAGALLANES"] = "Magallanes";
+})(RegionEnum || (exports.RegionEnum = RegionEnum = {}));

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Propiedad Disponible</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 30px 40px 20px 40px; text-align: center; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); border-radius: 8px 8px 0 0;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700;">
+                                🏡 Nueva Propiedad Disponible
+                            </h1>
+                            <p style="color: #c6f6d5; margin: 10px 0 0 0; font-size: 16px;">
+                                ¡Encontramos algo perfecto para ti!
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <p style="color: #2d3748; font-size: 18px; line-height: 1.6; margin: 0 0 20px 0;">
+                                Hola <strong>{{userName}}</strong>,
+                            </p>
+                            
+                            <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
+                                Tenemos excelentes noticias. Hemos encontrado una nueva propiedad que coincide con tus criterios de búsqueda:
+                            </p>
+                            
+                            <!-- Property Card -->
+                            <div style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin: 25px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                <!-- Property Image Placeholder -->
+                                <div style="background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%); height: 200px; display: flex; align-items: center; justify-content: center; color: #a0aec0; font-size: 48px;">
+                                    🏠
+                                </div>
+                                
+                                <!-- Property Details -->
+                                <div style="padding: 25px;">
+                                    <h3 style="color: #2d3748; margin: 0 0 15px 0; font-size: 22px; font-weight: 600;">
+                                        {{propertyTitle}}
+                                    </h3>
+                                    
+                                    <div style="background-color: #f7fafc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #4a5568; font-size: 15px; width: 50%;">
+                                                    <strong style="color: #2d3748;">💰 Precio:</strong> {{propertyPrice}}
+                                                </td>
+                                                <td style="padding: 8px 0; color: #4a5568; font-size: 15px;">
+                                                    <strong style="color: #2d3748;">📐 Superficie:</strong> {{propertySize}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #4a5568; font-size: 15px;">
+                                                    <strong style="color: #2d3748;">🛏️ Dormitorios:</strong> {{propertyBedrooms}}
+                                                </td>
+                                                <td style="padding: 8px 0; color: #4a5568; font-size: 15px;">
+                                                    <strong style="color: #2d3748;">🚿 Baños:</strong> {{propertyBathrooms}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 8px 0; color: #4a5568; font-size: 15px;">
+                                                    <strong style="color: #2d3748;">🚗 Estacionamientos:</strong> {{propertyParking}}
+                                                </td>
+                                                <td style="padding: 8px 0; color: #4a5568; font-size: 15px;">
+                                                    <strong style="color: #2d3748;">📍 Ubicación:</strong> {{propertyLocation}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <!-- Match Percentage -->
+                                    <div style="background-color: #f0fff4; border: 1px solid #9ae6b4; border-radius: 6px; padding: 12px; margin: 20px 0; text-align: center;">
+                                        <span style="color: #22543d; font-weight: 600; font-size: 16px;">
+                                            🎯 Compatibilidad: {{matchPercentage}}% con tus preferencias
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Property Description -->
+                                    <p style="color: #4a5568; font-size: 15px; line-height: 1.6; margin: 20px 0;">
+                                        {{propertyDescription}}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- CTA Buttons -->
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="{{propertyUrl}}" style="background-color: #4299e1; color: #ffffff; padding: 15px 25px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; margin: 0 10px 10px 0;">
+                                    Ver Detalles Completos
+                                </a>
+                                <a href="{{scheduleViewingUrl}}" style="background-color: #48bb78; color: #ffffff; padding: 15px 25px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; margin: 0 10px 10px 0;">
+                                    Agendar Visita
+                                </a>
+                            </div>
+                            
+                            <!-- Urgency Message -->
+                            <div style="background-color: #fefcbf; border: 1px solid #f6e05e; border-radius: 6px; padding: 15px; margin: 25px 0;">
+                                <p style="color: #744210; margin: 0; font-weight: 500; text-align: center;">
+                                    ⏰ <strong>¡Actúa rápido!</strong> Las propiedades como esta se venden rápidamente en {{propertyLocation}}.
+                                </p>
+                            </div>
+                            
+                            <p style="color: #4a5568; font-size: 16px; line-height: 1.6; margin: 20px 0 0 0;">
+                                ¿Tienes alguna pregunta sobre esta propiedad? No dudes en contactarnos directamente.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px 40px; background-color: #f7fafc; border-radius: 0 0 8px 8px; border-top: 1px solid #e2e8f0;">
+                            <p style="color: #718096; font-size: 14px; margin: 0 0 10px 0; text-align: center;">
+                                <strong>Saludos cordiales,</strong><br>
+                                <strong>Equipo Real Estate Platform</strong>
+                            </p>
+                            <p style="color: #a0aec0; font-size: 12px; margin: 0; text-align: center;">
+                                {{currentDate}} | Enviado a {{userEmail}}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

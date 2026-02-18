@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hemos recibido tu interés</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      margin: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .content {
+      padding: 30px 20px;
+    }
+    .property-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .property-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .message-box {
+      background-color: #e9ecef;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #667eea;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+    .contact-info {
+      background-color: #e7f3ff;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>¡Gracias por tu interés!</h1>
+    </div>
+
+    <div class="content">
+      <p>Hola <strong>{{name}}</strong>,</p>
+
+      <p>Hemos recibido tu interés en la siguiente propiedad:</p>
+
+      <div class="property-box">
+        <div class="property-title">{{propertyTitle}}</div>
+      </div>
+
+      {{#if message}}
+      <p>Tu mensaje:</p>
+      <div class="message-box">
+        "{{message}}"
+      </div>
+      {{/if}}
+
+      <p><strong>¿Qué sucede ahora?</strong></p>
+      <ul>
+        <li>Nuestro equipo revisará tu solicitud</li>
+        <li>Te contactaremos pronto con más información</li>
+        <li>Si tienes preguntas adicionales, puedes responder a este correo</li>
+      </ul>
+
+      <div class="contact-info">
+        <p><strong>Información de contacto:</strong></p>
+        <p>📧 Email: <a href="mailto:{{contactEmail}}">{{contactEmail}}</a></p>
+        {{#if contactPhone}}
+        <p>📞 Teléfono: {{contactPhone}}</p>
+        {{/if}}
+        <p>🏢 Real Estate Platform</p>
+      </div>
+
+      <p>¡Gracias por confiar en nosotros!</p>
+
+      <p>Atentamente,<br>
+      <strong>El equipo de {{companyName}}</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>Este es un mensaje automático generado por nuestro sistema.</p>
+      <p>Por favor, no respondas directamente a este correo.</p>
+      <p>&copy; {{currentYear}} {{companyName}}. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

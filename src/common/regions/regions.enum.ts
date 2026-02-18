@@ -1,0 +1,18 @@
+export enum RegionEnum {
+  ARICA_Y_PARINACOTA = 'Arica y Parinacota',
+  TARAPACA = 'Tarapacá',
+  ANTOFAGASTA = 'Antofagasta',
+  ATACAMA = 'Atacama',
+  COQUIMBO = 'Coquimbo',
+  VALPARAISO = 'Valparaíso',
+  METROPOLITANA = 'Metropolitana de Santiago',
+  OHIGGINS = "O'Higgins",
+  MAULE = 'Maule',
+  ÑUBLE = 'Ñuble',
+  BIOBIO = 'Biobío',
+  ARAUCANIA = 'La Araucanía',
+  LOS_RIOS = 'Los Ríos',
+  LOS_LAGOS = 'Los Lagos',
+  AYSEN = 'Aysén',
+  MAGALLANES = 'Magallanes',
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo interés en propiedad</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      margin: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .alert-badge {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .content {
+      padding: 30px 20px;
+    }
+    .property-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #ff6b6b;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .property-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    .user-info {
+      background-color: #e7f3ff;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .user-detail {
+      margin: 5px 0;
+    }
+    .message-box {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+      border-left: 4px solid #6c757d;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #ff6b6b;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+    .action-items {
+      background-color: #fff3cd;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .action-items ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .action-items li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔔 Nuevo Interés en Propiedad</h1>
+      <div class="alert-badge">ACCIÓN REQUERIDA</div>
+    </div>
+
+    <div class="content">
+      <p>Hola <strong>{{recipientName}}</strong>,</p>
+
+      <p>Has recibido una nueva expresión de interés en una propiedad asignada:</p>
+
+      <div class="property-box">
+        <div class="property-title">{{propertyTitle}}</div>
+      </div>
+
+      <div class="user-info">
+        <h3 style="margin-top: 0; color: #495057;">📋 Información del Interesado</h3>
+        <div class="user-detail"><strong>Nombre:</strong> {{interestedUserName}}</div>
+        <div class="user-detail"><strong>Email:</strong> <a href="mailto:{{interestedUserEmail}}">{{interestedUserEmail}}</a></div>
+        {{#if interestedUserPhone}}
+        <div class="user-detail"><strong>Teléfono:</strong> {{interestedUserPhone}}</div>
+        {{/if}}
+      </div>
+
+      {{#if message}}
+      <div class="message-box">
+        <h3 style="margin-top: 0; color: #495057;">💬 Mensaje del Usuario</h3>
+        <p style="margin-bottom: 0; font-style: italic;">"{{message}}"</p>
+      </div>
+      {{/if}}
+
+      <div class="action-items">
+        <h3 style="margin-top: 0; color: #856404;">📝 Próximos Pasos Recomendados</h3>
+        <ul>
+          <li>Contactar al interesado dentro de las próximas 24 horas</li>
+          <li>Proporcionar información adicional sobre la propiedad</li>
+          <li>Coordinar una visita si el interesado lo solicita</li>
+          <li>Actualizar el estado de la notificación en el sistema</li>
+        </ul>
+      </div>
+
+      <p><strong>¿Necesitas ayuda?</strong> Contacta al equipo de soporte si tienes alguna pregunta.</p>
+
+      <p>Atentamente,<br>
+      <strong>Sistema de Notificaciones - {{companyName}}</strong></p>
+    </div>
+
+    <div class="footer">
+      <p>Este es un mensaje automático generado por nuestro sistema de notificaciones.</p>
+      <p>Por favor, revisa el panel de administración para más detalles.</p>
+      <p>&copy; {{currentYear}} {{companyName}}. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitud de publicación recibida</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      margin: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .content {
+      padding: 30px 20px;
+    }
+    .status-box {
+      background-color: #ecfdf5;
+      border-left: 4px solid #10b981;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .property-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+    .footer p { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>¡Solicitud Recibida!</h1>
+    </div>
+    
+    <div class="content">
+      <p>Hola <strong>{{name}}</strong>,</p>
+      <p>Hemos recibido correctamente tu solicitud para publicar la propiedad "<strong>{{propertyTitle}}</strong>".</p>
+      
+      <div class="status-box">
+        <p>Tu solicitud ha sido ingresada a nuestro sistema y actualmente se encuentra en estado <strong>Pendiente de Revisión</strong>.</p>
+        <p>Un administrador revisará la información y te notificaremos cuando la publicación sea aprobada o si requerimos más detalles.</p>
+      </div>
+
+      <p>Gracias por confiar en nosotros para publicar tu propiedad.</p>
+    </div>
+
+    <div class="footer">
+      <p><strong>{{companyName}}</strong></p>
+      <p>© {{currentYear}} Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>

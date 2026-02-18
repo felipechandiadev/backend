@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva solicitud de publicación</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+    }
+    .container {
+      background-color: white;
+      margin: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .alert-badge {
+      background-color: #dbeafe;
+      color: #1e40af;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-block;
+      margin-top: 10px;
+    }
+    .content {
+      padding: 30px 20px;
+    }
+    .property-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #2563eb;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .property-title {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    .user-info {
+      background-color: #f0f7ff;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+    }
+    .user-detail {
+      margin: 5px 0;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #2563eb;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      border-radius: 6px;
+      margin: 20px 0;
+      font-weight: 500;
+      text-align: center;
+    }
+    .footer p { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Nueva Solicitud de Publicación</h1>
+      <div class="alert-badge">Acción requerida</div>
+    </div>
+    
+    <div class="content">
+      <p>Hola <strong>{{recipientName}}</strong>,</p>
+      <p>Se ha recibido una nueva solicitud de publicación de propiedad desde el portal comunitario.</p>
+      
+      <div class="property-box">
+        <div class="property-title">Información de la Propiedad</div>
+        <div class="user-detail">Título: {{propertyTitle}}</div>
+        <div class="user-detail">Operación: {{propertyOperation}}</div>
+      </div>
+
+      <div class="user-info">
+        <div class="property-title">Solicitante</div>
+        <div class="user-detail">Nombre: {{interestedUserName}}</div>
+        <div class="user-detail">Email: {{interestedUserEmail}}</div>
+        {{#if interestedUserPhone}}
+        <div class="user-detail">Teléfono: {{interestedUserPhone}}</div>
+        {{/if}}
+      </div>
+
+      <div style="text-align: center;">
+        <a href="{{platformUrl}}/backOffice/properties" class="button">Gestionar en Panel</a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p><strong>{{companyName}}</strong></p>
+      <p>© {{currentYear}} Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html>
